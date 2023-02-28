@@ -1,11 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import "./Room.styles.css";
-import AgoraRTC from "agora-rtc-sdk";
+import AgoraRTC from "agora-rtc-sdk-ng";
 import AgoraRTM from "agora-rtm-sdk";
 
 const Room = () => {
+  const [TOKEN, setTOKEN] = useState("");
+  const [ROOM, setROOM] = useState("");
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch("http://localhost:3001/room");
+        const data = await response.json();
+        setTOKEN(data.TOKEN);
+        setROOM(data.CHANNEL);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
+  }, []);
+
   const APP_ID = "bfca05642cd54e18bac76fe16727eb02";
   let navigate = useNavigate();
   let messagesContainer = document.getElementById("messages");
@@ -68,7 +84,6 @@ const Room = () => {
 
   // room_rtc
 
-  let token = null;
   let client;
 
   let uid = sessionStorage.getItem("uid");
@@ -76,11 +91,6 @@ const Room = () => {
     uid = String(Math.floor(Math.random() * 10000));
     sessionStorage.setItem("uid", uid);
   }
-
-  const queryString = window.location.search;
-  const urlParams = new URLSearchParams(queryString);
-
-  let roomId = "main";
 
   let displayName = sessionStorage.getItem("display_name");
   if (!displayName) {
@@ -98,10 +108,12 @@ const Room = () => {
 
   let joinRoomInit = async () => {
     rtmClient = await AgoraRTM.createInstance(APP_ID);
-    await rtmClient.login({ uid, token });
+    console.log(TOKEN);
+    await rtmClient.login({ uid, TOKEN });
 
     await rtmClient.addOrUpdateLocalUserAttributes({ name: displayName });
-    channel = await rtmClient.createChannel(roomId);
+
+    channel = await rtmClient.createChannel(ROOM);
     await channel.join();
 
     channel.on("MemberJoined", handleMemberJoined);
@@ -112,7 +124,7 @@ const Room = () => {
     addBotMessageToDom(`Welcome ${displayName}! 👋`);
 
     client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-    await client.join(APP_ID, roomId, token, uid);
+    await client.join(APP_ID, ROOM, TOKEN, uid);
 
     client.on("user-published", handleUserPublished);
     client.on("user-left", handleUserLeft);

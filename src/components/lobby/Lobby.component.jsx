@@ -1,19 +1,40 @@
 import React, { useEffect, useState } from "react";
 import Logo from "../../assets/logo.png";
-import { useNavigate, useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Lobby.styles.css";
 
 const Lobby = () => {
   let navigate = useNavigate();
   const [name, setName] = useState("");
   const [roomName, setRoomName] = useState("");
+  const [form, setForm] = useState({});
 
-  const handleLobbySubmit = (e) => {
+  const handleForm = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  console.log(form);
+
+  const handleLobbySubmit = async (e) => {
     e.preventDefault();
 
-    sessionStorage.setItem("display_name", name);
+    const response = await fetch("http://localhost:3001/room", {
+      method: "POST",
+      body: JSON.stringify(form),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    let inviteCode = roomName;
+    const data = await response.json();
+    console.log(data);
+
+    sessionStorage.setItem("display_name", form.userName);
+
+    let inviteCode = form.channelName;
     if (!inviteCode) {
       inviteCode = String(Math.floor(Math.random() * 10000));
     }
@@ -74,7 +95,7 @@ const Lobby = () => {
                 type="text"
                 name="userName"
                 placeholder="Enter your display name..."
-                onChange={(e) => setName(e.target.value)}
+                onChange={handleForm}
               />
             </div>
 
@@ -85,7 +106,7 @@ const Lobby = () => {
                 name="channelName"
                 required
                 placeholder="Enter room name..."
-                onChange={(e) => setRoomName(e.target.value)}
+                onChange={handleForm}
               />
             </div>
 
