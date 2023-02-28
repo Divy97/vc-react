@@ -29,6 +29,11 @@ const Room = () => {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
+  var displayName = sessionStorage.getItem("display_name");
+  if (!displayName) {
+    navigate("/");
+  }
+
   const memberContainer = document.getElementById("members__container");
   const chatContainer = document.getElementById("messages__container");
 
@@ -90,11 +95,6 @@ const Room = () => {
   if (!uid) {
     uid = String(Math.floor(Math.random() * 10000));
     sessionStorage.setItem("uid", uid);
-  }
-
-  let displayName = sessionStorage.getItem("display_name");
-  if (!displayName) {
-    navigate("/lobby");
   }
 
   let rtmClient;

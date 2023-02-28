@@ -3,7 +3,6 @@ import { Route, Routes } from "react-router-dom";
 
 import Lobby from "./components/lobby/Lobby.component";
 import Room from "./components/room/Room.component";
-
 import "./App.css";
 
 const App = () => {
