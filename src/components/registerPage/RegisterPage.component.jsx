@@ -101,6 +101,31 @@ const RegisterPage = () => {
     }
   };
 
+  const postDetails = (pics) => {
+    if (!pics) {
+      alert("Please select an Image");
+    }
+
+    if (pics.type === "image/jpeg" || pics.type === "image/png") {
+      const data = new FormData();
+      data.append("file", pics);
+      data.append("upload_preset", "vc-main");
+      data.append("cloud_name", "ddrl0obg0");
+      fetch("https://api.cloudinary.com/v1_1/ddrl0obg0/image/upload", {
+        method: "POST",
+        body: data,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          setRegPic(data.url.toString());
+        })
+        .catch((error) => console.log(error));
+    } else {
+      alert("Please Select an valid Image(jpeg/png)");
+    }
+  };
+
   return (
     <section>
       <div className="container">
@@ -144,7 +169,11 @@ const RegisterPage = () => {
           <div className="formBx">
             <form action="" onSubmit={submitRegisterHandler}>
               <h2>Create an account</h2>
-              <input type="file" name="" />
+              <input
+                type="file"
+                name=""
+                onChange={(e) => postDetails(e.target.files[0])}
+              />
               <input
                 type="text"
                 name=""
