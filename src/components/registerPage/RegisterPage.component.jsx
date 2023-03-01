@@ -22,13 +22,13 @@ const RegisterPage = () => {
   const [regMessage, setRegMessage] = useState(null);
   const [regPicMessage, setRegPicMessage] = useState(null);
 
-  // let navigate = useNavigate();
-  // useEffect(() => {
-  //   const userInfo = localStorage.getItem("userInfo");
-  //   if (userInfo) {
-  //     navigate("/lobby");
-  //   }
-  // }, []);
+  let navigate = useNavigate();
+  useEffect(() => {
+    const userInfo = localStorage.getItem("userInfo");
+    if (userInfo) {
+      navigate("/lobby");
+    }
+  }, []);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -53,7 +53,7 @@ const RegisterPage = () => {
       );
       console.log(data);
       localStorage.setItem("userInfo", JSON.stringify(data));
-
+      navigate("/lobby");
       // setLoading(false);
     } catch (error) {
       console.log("incatch");
